@@ -1,14 +1,25 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import { addMessage } from '@/lib/messages';
+import { addMessage } from "@/lib/messages";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export default function NewMessagePage() {
   async function createMessage(formData) {
-    'use server';
+    "use server";
 
-    const message = formData.get('message');
+    const message = formData.get("message");
     addMessage(message);
-    redirect('/messages');
+
+    // Revalidate the messages layout to update the message count
+    // revalidatePath("/messages", "layout");
+
+    // Revalidate the messages page to show the new message in the list
+    // revalidatePath("/messages");
+
+    // Revalidate any route that uses the 'msg' tag
+    revalidateTag("msg");
+
+    redirect("/messages");
   }
 
   return (
